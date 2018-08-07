@@ -1,22 +1,22 @@
 Package: symDMatrix
-Version: 1.0.0
+Version: 2.0.0
 License: MIT + file LICENSE
 Title: Partitioned Symmetric Matrices
-Description: A class that partitions a symmetric matrix into matrix-like
-    objects (blocks) while behaving similarly to a base R matrix. Very large
-    symmetric matrices are supported if the blocks are memory-mapped objects.
+Description: A matrix-like class to represent a symmetric matrix partitioned
+    into file-backed blocks.
 Authors@R: c(
     person("Gustavo", "de los Campos", email = "gustavoc@msu.edu", role = c("aut")),
     person("Alexander", "Grueneberg", email = "alexander.grueneberg@googlemail.com", role = c("aut", "cre")))
 URL: https://github.com/QuantGen/symDMatrix
 BugReports: https://github.com/QuantGen/symDMatrix/issues
-Imports: methods
-Suggests: ff, bit, testthat, BEDMatrix
-RoxygenNote: 6.0.1
+Imports: methods, LinkedMatrix (>= 1.3.0), ff, bit
+Suggests: BGData, BEDMatrix, testthat, covr
+RoxygenNote: 6.1.0
+Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2017-05-08 10:08:08 UTC; agrueneberg
+Packaged: 2018-08-07 15:31:39 UTC; agrueneberg
 Author: Gustavo de los Campos [aut],
   Alexander Grueneberg [aut, cre]
 Maintainer: Alexander Grueneberg <alexander.grueneberg@googlemail.com>
 Repository: CRAN
-Date/Publication: 2017-05-08 13:27:16 UTC
+Date/Publication: 2018-08-07 17:00:03 UTC

@@ -1,13 +1,14 @@
 symDMatrix
 ==========
 
-[![Travis-CI Build Status](https://travis-ci.org/QuantGen/symDMatrix.svg?branch=master)](https://travis-ci.org/QuantGen/symDMatrix)
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/symDMatrix)](https://cran.r-project.org/package=symDMatrix)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/symDMatrix)](https://CRAN.R-project.org/package=symDMatrix)
 [![Rdoc](http://www.rdocumentation.org/badges/version/symDMatrix)](http://www.rdocumentation.org/packages/symDMatrix)
+[![Travis-CI Build Status](https://travis-ci.org/QuantGen/symDMatrix.svg?branch=master)](https://travis-ci.org/QuantGen/symDMatrix)
+[![Coverage status](https://codecov.io/gh/QuantGen/symDMatrix/branch/master/graph/badge.svg)](https://codecov.io/github/QuantGen/symDMatrix?branch=master)
 
-symDMatrix is an R package that provides symmetric matrices assembled from memory-mapped blocks.
+symDMatrix is an R package that provides symmetric matrices partitioned into file-backed blocks.
 
-A symmetric matrix is partitioned into blocks as follows:
+A symmetric matrix `G` is partitioned into blocks as follows:
 
 ```
 + --- + --- + --- +
@@ -19,15 +20,9 @@ A symmetric matrix is partitioned into blocks as follows:
 + --- + --- + --- +
 ```
 
-Because the matrix is assumed to be symmetric (i.e., Gij equals Gji), only the upper-triangular blocks are stored. Each block is a matrix-like object, for example a memory-mapped flat file using the `ff` package.
+Because the matrix is assumed to be symmetric (i.e., `Gij` equals `Gji`), only the diagonal and upper-triangular blocks are stored and the other blocks are virtual transposes of the corresponding diagonal blocks. Each block is a file-backed matrix of type `ff_matrix` of the [ff](https://CRAN.R-project.org/package=ff) package.
 
-The package defines the class and multiple methods that allow treating this memory-mapped matrix as a standard RAM matrix.
-
-Internally, a `symDMatrix` object is an S4 class with the following slots:
-
-* `@data` (list) each element of the list is an ff object
-* `@centers` (numeric) column-means used in the computation of the matrix
-* `@scales` (numeric) column-standard deviations used to scale the matrix
+The package defines the class and multiple methods that allow treating this file-backed matrix as a standard RAM matrix.
 
 
 Tutorial
@@ -103,7 +98,7 @@ for (i in 1:100) {
 
 ### (3) Creating a symDMatrix from genotypes
 
-The function `getG_symDMatrix` of the [BGData](https://github.com/QuantGen/BGData) package computes G=XX' (with options for centering and scaling) without ever loading G in RAM. It creates the `symDMatrix` object directly, block by block. In this example, `X` is a matrix in RAM. For large genotype data sets, `X` could be a memory-mapped matrix, e.g., a `BEDMatrix` or `ff` object.
+The function `getG_symDMatrix` of the [BGData](https://CRAN.R-project.org/package=BGData) package computes G=XX' (with options for centering and scaling) without ever loading G in RAM. It creates the `symDMatrix` object directly, block by block. In this example, `X` is a matrix in RAM. For large genotype data sets, `X` could be a file-backed matrix, e.g., a `BEDMatrix` or `ff` object.
 
 ```R
 library(BGData)
@@ -127,7 +122,7 @@ for(i in 1:10){
 
 ### (4) Creating a symDMatrix from `ff` files containing the blocks
 
-The function `symDMatrix` allows creating a `symDMatrix` object from a list of `ff` files. The list is assumed to provide, in order, files for `G11, G12, ..., G1q, G22, G23, ..., G2q, ..., Gqq`. This approach is useful for very large G matrices. If `n` is large it may make sense to compute the blocks of the `symDMatrix` object in parallel jobs (e.g., in an HPC). The function `getG` of the [BGData](https://github.com/QuantGen/BGData) package is similar to `getG_symDMatrix` but accepts arguments `i1` and `i2` which define a block of G (i.e., rows of `X`).
+The function `symDMatrix` allows creating a `symDMatrix` object from a list of `.RData` files containing `ff_matrix` objects. The list is assumed to provide, in order, files for `G11, G12, ..., G1q, G22, G23, ..., G2q, ..., Gqq`. This approach is useful for very large G matrices. If `n` is large it may make sense to compute the blocks of the `symDMatrix` object in parallel jobs (e.g., in an HPC). The function `getG` of the [BGData](https://CRAN.R-project.org/package=BGData) package is similar to `getG_symDMatrix` but accepts arguments `i1` and `i2` which define a block of G (i.e., rows of `X`).
 
 ```R
 library(BGLR)
@@ -159,7 +154,9 @@ for (r in 1:nBlocks) {
         save(block, file = paste0(blockName, ".RData"))
     }
 }
-G2 <- as.symDMatrix(list.files(pattern = "^wheat.*RData$"), centers = centers, scales = scales)
+G2 <- as.symDMatrix(list.files(pattern = "^wheat.*RData$"))
+attr(G2, "centers") <- centers
+attr(G2, "scales") <- scales
 
 all.equal(diag(G1), diag(G2)) # there will be a slight numerical penalty
 ```
@@ -168,13 +165,13 @@ all.equal(diag(G1), diag(G2)) # there will be a slight numerical penalty
 Installation
 ------------
 
-To get the current released version from CRAN:
+Install the stable version from CRAN:
 
 ```R
 install.packages("symDMatrix")
 ```
 
-To get the current development version from GitHub:
+Alternatively, install the development version from GitHub:
 
 ```R
 # install.packages("devtools")
@@ -182,21 +179,14 @@ devtools::install_github("QuantGen/symDMatrix")
 ```
 
 
-Example Dataset
----------------
+Contribute
+----------
 
-The example dataset in the `inst/extdata` folder is the G matrix of the dummy dataset that comes with the [BEDMatrix](https://cran.r-project.org/package=BEDMatrix) package. It has been generated as follows:
+- Issue Tracker: https://github.com/QuantGen/symDMatrix/issues
+- Source Code: https://github.com/QuantGen/symDMatrix
 
-```R
-library(BGData)
 
-X <- BEDMatrix(system.file("extdata", "example.bed", package = "BEDMatrix"))
+Documentation
+-------------
 
-G <- getG_symDMatrix(X, blockSize = 17, folderOut = "inst/extdata")
-```
-
-To load the dataset:
-
-```R
-load.symDMatrix(system.file("extdata", "G.RData", package = "symDMatrix")) # loads G
-```
+Further documentation can be found on [RDocumentation](http://www.rdocumentation.org/packages/symDMatrix).

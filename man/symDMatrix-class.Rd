@@ -4,38 +4,23 @@
 \name{symDMatrix-class}
 \alias{symDMatrix-class}
 \alias{symDMatrix}
-\title{A Class to Represent a Symmetric Matrix Paritioned into Memory-Mapped
-Blocks.}
+\title{A Matrix-Like Class to Represent a Symmetric Matrix Partitioned into
+File-Backed Blocks.}
 \description{
-A \code{symDMatrix} is a symmetric matrix partitioned into matrix-like (ideally
-memory-mapped) blocks. This approach allows for very large symmetric
-matrices, commonly found for example when computing genetic relationship
-matrices on large cohorts. A \code{symDMatrix} object behaves similarly to a
-regular \code{matrix} by implementing key methods such as \code{[}, \code{dim}, and
-\code{dimnames}.
+A \code{symDMatrix} is a symmetric matrix partitioned into file-backed blocks.
+This approach allows for very large symmetric matrices, commonly found for
+example when computing genetic relationship matrices on large cohorts. A
+\code{symDMatrix} object behaves similarly to a regular \code{matrix} by implementing
+key methods such as \code{[}, \code{dim}, and \code{dimnames}.
 }
 \details{
-Each block is a matrix-like block. Currently supported are \code{ff} objects.
-Because the matrix is symmetric, only the diagonal and upper-triangular
-blocks are stored.
+The \code{symDMatrix} class is a \link[LinkedMatrix:RowLinkedMatrix]{LinkedMatrix::RowLinkedMatrix} that nests
+multiple \link[LinkedMatrix:ColumnLinkedMatrix]{LinkedMatrix::ColumnLinkedMatrix} objects containing blocks of
+type \code{ff_matrix}. Because the matrix is symmetric, only the diagonal and
+upper-triangular blocks need to be stored, but for more efficient queries,
+the lower-triangular blocks are virtual transposes of their diagonal
+counterparts.
 }
-\section{Slots}{
-
-\describe{
-\item{\code{data}}{A nested list in the form of \code{[[G11, G12, G13, ..., G1q],
-[G22, G23, ..., G2q], [...], [Gqq]]}, each list element representing a block
-of a partitioned symmetric and upper-triangular matrix. There are \code{(q * (q + 1)) / 2} blocks in total and each list level consists of \code{q - i} blocks,
-where \code{q} is the number of column/row blocks and \code{i} is the current row
-index. All blocks except the ones in the last column/row are expected to
-have the same dimensions.}
-
-\item{\code{centers}}{A numeric vector storing the values used for column centering
-when creating the symmetric matrix.}
-
-\item{\code{scales}}{A numeric vector storing the values used for column scaling
-when creating the symmetric matrix.}
-}}
-
 \examples{
 # Get the path to the example symmetric matrix
 path <- system.file("extdata", "G.RData", package = "symDMatrix")
@@ -63,6 +48,6 @@ G[c("per0_per0", "per1_per1", "per2_per2"), ]
 }
 \seealso{
 \link[=initialize,symDMatrix-method]{initialize()} to create a
-\code{symDMatrix} object from scratch, \code{\link[=as.symDMatrix]{as.symDMatrix()}} to create a \code{symDMatrix}
-object from other objects.
+\code{symDMatrix} object from scratch, or preferably, \code{\link[=as.symDMatrix]{as.symDMatrix()}} to create
+a \code{symDMatrix} object from other objects.
 }
