@@ -1,5 +1,5 @@
 Package: symDMatrix
-Version: 2.0.0
+Version: 2.0.1
 License: MIT + file LICENSE
 Title: Partitioned Symmetric Matrices
 Description: A matrix-like class to represent a symmetric matrix partitioned
@@ -14,9 +14,9 @@ Suggests: BGData, BEDMatrix, testthat, covr
 RoxygenNote: 6.1.0
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2018-08-07 15:31:39 UTC; agrueneberg
+Packaged: 2018-08-24 19:24:27 UTC; amphysvena
 Author: Gustavo de los Campos [aut],
   Alexander Grueneberg [aut, cre]
 Maintainer: Alexander Grueneberg <alexander.grueneberg@googlemail.com>
 Repository: CRAN
-Date/Publication: 2018-08-07 17:00:03 UTC
+Date/Publication: 2018-08-24 19:50:03 UTC
