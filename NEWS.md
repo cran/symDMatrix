@@ -1,3 +1,8 @@
+# symDMatrix 2.1.1
+
+- Use `open` instead of `open.ff` for compatibility with ff 4.
+
+
 # symDMatrix 2.1.0
 
 - Follow [Bioconductor S4 practices][2]. If you have used `new()` to create
